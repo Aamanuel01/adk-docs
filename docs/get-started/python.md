@@ -1,4 +1,82 @@
-# Python Quickstart for ADK
+from google.adk.agents import LlmAgent
+from google.adk.tools import agent_tool
+from google.adk.tools.google_search_tool import GoogleSearchTool
+from google.adk.tools import url_context
+
+expense_cutter_google_search_agent = LlmAgent(
+  name='Expense_Cutter_google_search_agent',
+  model='gemini-3.1-pro-preview',
+  description=(
+      'Agent specialized in performing Google searches.'
+  ),
+  sub_agents=[],
+  instruction='Use the GoogleSearchTool to find information on the web.',
+  tools=[
+    GoogleSearchTool()
+  ],
+)
+expense_cutter_url_context_agent = LlmAgent(
+  name='Expense_Cutter_url_context_agent',
+  model='gemini-3.1-pro-preview',
+  description=(
+      'Agent specialized in fetching content from URLs.'
+  ),
+  sub_agents=[],
+  instruction='Use the UrlContextTool to retrieve content from provided URLs.',
+  tools=[
+    url_context
+  ],
+)
+expense_cutter = LlmAgent(
+  name='expense_cutter',
+  model='gemini-3.1-pro-preview',
+  description=(
+      'Finds ways to reduce business expenses'
+  ),
+  sub_agents=[],
+  instruction='You are a cost-reduction specialist. When a user has a low profit margin, look at their business type and suggest 5 ways to lower their monthly expenses without hurting their sales',
+  tools=[
+    agent_tool.AgentTool(agent=expense_cutter_google_search_agent),
+    agent_tool.AgentTool(agent=expense_cutter_url_context_agent)
+  ],
+)
+my_profit_advisor_google_search_agent = LlmAgent(
+  name='My_Profit_Advisor_google_search_agent',
+  model='gemini-3.1-pro-preview',
+  description=(
+      'Agent specialized in performing Google searches.'
+  ),
+  sub_agents=[],
+  instruction='Use the GoogleSearchTool to find information on the web.',
+  tools=[
+    GoogleSearchTool()
+  ],
+)
+my_profit_advisor_url_context_agent = LlmAgent(
+  name='My_Profit_Advisor_url_context_agent',
+  model='gemini-3.1-pro-preview',
+  description=(
+      'Agent specialized in fetching content from URLs.'
+  ),
+  sub_agents=[],
+  instruction='Use the UrlContextTool to retrieve content from provided URLs.',
+  tools=[
+    url_context
+  ],
+)
+root_agent = LlmAgent(
+  name='My_Profit_Advisor',
+  model='gemini-3.1-pro-preview',
+  description=(
+      'Calculates profit margins'
+  ),
+  sub_agents=[expense_cutter],
+  instruction='You are a helpful financial advisor for small businesses. When a user gives you their revenue and costs, you will calculate their profit margin. You will then give them one short, friendly tip on how to improve it.',
+  tools=[
+    agent_tool.AgentTool(agent=my_profit_advisor_google_search_agent),
+    agent_tool.AgentTool(agent=my_profit_advisor_url_context_agent)
+  ],
+)# Python Quickstart for ADK
 
 This guide shows you how to get up and running with Agent Development Kit
 (ADK) for Python. Before you start, make sure you have the following installed:
